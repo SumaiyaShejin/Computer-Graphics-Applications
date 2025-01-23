@@ -1,2 +1,4 @@
 1. WebGL application to draw a Triangle Bird (A special kind of bird made with only triangles).
 2. 2D circles within circles each having a different color and size. Initially, there will be a circle with a bigger radius. For each click, another circle with different color and a smaller radius will be created keeping the previous circles preserved.
+3. 2D scenario (model) is created using 2D triangle mesh. Applied per-vertex color on model. Integrated a keyboard interaction having at least one GLSL control statement (and/or built-in function) inside the shader.
+4. 3D cube using index buffer. Provided different colors for different faces. There is a border for the object. For each left click, the cube will be scaled up and for the right click, it will be scaled down. By pressing the right and down arrow keys, the cube will rotate (+ve) along the Y and X axis respectively.
