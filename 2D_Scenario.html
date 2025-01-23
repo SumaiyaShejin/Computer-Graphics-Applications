@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment-02 part b</title>
+</head>
+<body>
+    <canvas id="webglcanvas" width="700" height="700"></canvas>
+    <script>
+        var canvas = document.getElementById("webglcanvas");
+        var gl = canvas.getContext("webgl");
+
+        // Vertex Shader
+        var vertexShaderSource = `
+        attribute vec3 a_coords;
+        attribute vec3 a_colors;
+        uniform float u_light;
+        varying vec3 v_color;
+
+        void main() {
+            vec3 modifiedColor = a_colors;
+            modifiedColor.b = modifiedColor.b * (1.0 + u_light); // Apply light to blue channel globally
+            gl_Position = vec4(a_coords.x, a_coords.y, a_coords.z, 1.0);
+            v_color = modifiedColor;
+        }`;
+
+        // Fragment Shader
+        var fragmentShaderSource = `
+        precision mediump float;
+        varying vec3 v_color;
+        void main() {
+            gl_FragColor = vec4(v_color, 1.0);
+        }`;
+
+        // Compile shaders and create program
+        var vsh = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vsh, vertexShaderSource);
+        gl.compileShader(vsh);
+        var fsh = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fsh, fragmentShaderSource);
+        gl.compileShader(fsh);
+        var prog = gl.createProgram();
+        gl.attachShader(prog, vsh);
+        gl.attachShader(prog, fsh);
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+
+        // Define vertices for the umbrella canopy (39 vertices, 13 triangles)
+          var umbrellaVerticesAndColors = [
+    // Handle (6 vertices, 2 triangles)
+    -0.05, -1.0, 0.0, 0.3, 0.2, 0.1,
+     0.05, -1.0, 0.0, 0.3, 0.2, 0.1,
+    -0.05, -0.3, 0.0, 0.3, 0.2, 0.1,
+    -0.05, -0.3, 0.0, 0.3, 0.2, 0.1,
+     0.05, -1.0, 0.0, 0.3, 0.2, 0.1,
+     0.05, -0.3, 0.0, 0.3, 0.2, 0.1,
+
+    -0.5, -0.6, 0.0, 0.30, 0.474, 0.2588,
+     0.5, -0.6, 0.0, 0.30, 0.474, 0.2588,
+     0.0, 0.8, 0.0, 0.30, 0.474, 0.2588,
+    
+    -0.35, -1.0, 0.0, 0.3, 0.2, 0.1,
+    -0.25, -1.0, 0.0, 0.3, 0.2, 0.1,
+    -0.35, -0.3, 0.0, 0.3, 0.2, 0.1,
+    -0.35, -0.3, 0.0, 0.3, 0.2, 0.1,
+    -0.25, -1.0, 0.0, 0.3, 0.2, 0.1,
+    -0.25, -0.3, 0.0, 0.3, 0.2, 0.1,
+
+    -0.8, -0.5, 0.0, 0.0, 1.0, 0.0,
+     0.25, -0.5, 0.0, 0.0, 1.0, 0.0,
+     -0.4, 0.9, 0.0, 0.0, 1.0, 0.0,
+
+     -0.8, -0.3, 0.0, 0.0, 1.0, 0.0,
+     0.25, -0.3, 0.0, 0.0, 0.0, 0.0,
+     -0.4, 0.9, 0.0, 0.0, 1.0, 0.0,
+
+    0.55, -1.0, 0.0, 0.3, 0.2, 0.1,
+    0.35, -1.0, 0.0, 0.3, 0.2, 0.1,
+    0.55, -0.3, 0.0, 0.3, 0.2, 0.1,
+    0.55, -0.3, 0.0, 0.3, 0.2, 0.1,
+    0.35, -1.0, 0.0, 0.3, 0.2, 0.1,
+    0.35, -0.3, 0.0, 0.3, 0.2, 0.1,
+	
+    0.1, -0.4, 0.0, 0.0, 0.501, 0.0,
+    0.8, -0.4, 0.0, 0.0, 0.501, 0.0,
+    0.45, 0.85, 0.0, 0.0, 0.501, 0.0,
+
+    0.1, -0.35, 0.0, 0.0, 0.501, 1.0,
+    0.8, -0.35, 0.0, 0.0, 0.501, 0.0,
+    0.45, 0.85, 0.0, 0.0, 0.501, 0.0,
+
+    -1.0, -1.0, 0.0, 0.0, 0.0, 0.0,
+    -0.7, -1.0, 0.0, 0.0, 0.0, 0.0,
+    -0.9, -0.4, 0.0, 0.0, 0.0, 0.0,
+ 
+    1.0, -1.0, 0.0, 1.0, 0.0, 0.0,
+    0.7, -1.0, 0.0, 0.0, 1.0, 0.0,
+    0.9, -0.4, 0.0, 0.0, 1.0, 0.0,
+
+    -0.95, -1.0, 0.0, 0.5, 0.5, 0.0,
+    -0.65, -1.0, 0.0, 0.5, 0.5, 0.0,
+    -0.9, -0.45, 0.0, 0.5, 0.5, 0.0,
+
+    0.95, -1.0, 0.0, 0.5, 0.5, 0.0,
+    0.65, -1.0, 0.0, 0.2, 0.5, 0.0,
+    0.9, -0.45, 0.0, 0.9, 0.5, 0.0,
+    
+    
+     
+];
+
+
+        var buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(umbrellaVerticesAndColors), gl.STATIC_DRAW);
+        var a_coords_loc = gl.getAttribLocation(prog, "a_coords");
+        gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 24, 0);
+        gl.enableVertexAttribArray(a_coords_loc);
+        var a_colors_loc = gl.getAttribLocation(prog, "a_colors");
+        gl.vertexAttribPointer(a_colors_loc, 3, gl.FLOAT, false, 24, 12);
+        gl.enableVertexAttribArray(a_colors_loc);
+
+        // Uniforms
+        var u_light_loc = gl.getUniformLocation(prog, "u_light");
+        var light = 0.0;
+        gl.uniform1f(u_light_loc, light);
+
+        // Render function
+        function render() {
+            gl.clearColor(0.588, 0.87, 0.8196, 1.0); 
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, umbrellaVerticesAndColors.length / 6);
+        }
+        render();
+
+        // Keyboard interaction for light adjustment
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 's' || event.key === 'S') {
+                light = (light + 0.1) % 2.0; // Adjust light intensity
+                gl.uniform1f(u_light_loc, light);
+                render();
+            }
+        });
+    </script>
+</body>
+</html>
+
+
